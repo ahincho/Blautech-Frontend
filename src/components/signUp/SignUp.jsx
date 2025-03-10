@@ -7,7 +7,7 @@ import "./SignUp.css";
 
 const SignUp = ({ setShowSignUp }) => {
   const { createUser, loading: creatingUser } = useCreateUser();
-  const { signIn, loading: signingIn } = useSignIn(); // Usamos el hook de login
+  const { signIn, loading: signingIn } = useSignIn(); 
   const [currentState, setCurrentState] = useState("Sign Up");
   const [formData, setFormData] = useState({
     firstname: "",

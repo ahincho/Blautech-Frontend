@@ -13,7 +13,7 @@ const Display = ({ category }) => {
   }, [error]);
   return (
     <div className="display" id="display">
-      <h2>Top dishes near you</h2>
+      <h2>Top products near you</h2>
       {loading ? (
         <p>Cargando productos...</p>
       ) : (

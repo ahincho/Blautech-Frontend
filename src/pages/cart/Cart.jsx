@@ -1,12 +1,10 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { StoreContext } from "../../contexts/StoreContext";
-import useCreateOrder from "../../hooks/UseCreateOrder";
 import "./Cart.css";
 
 const Cart = () => {
-  const { cartItems, products, removeFromCart, getTotalCartAmount, setCartItems } = useContext(StoreContext);
-  const { createOrder, loading } = useCreateOrder(); // Usar el hook para crear la orden
+  const { cartItems, products, removeFromCart, getTotalCartAmount } = useContext(StoreContext);
   const navigate = useNavigate();
 
   // Calcular el subtotal y redondear a 2 decimales
@@ -16,19 +14,9 @@ const Cart = () => {
   // Calcular el monto total y redondearlo a 2 decimales
   const total = (parseFloat(subtotal) + deliveryFee).toFixed(2);
 
-  // Manejar la acción de proceder a pago
-  const handleProceed = async () => {
-    // Llamar a createOrder para crear la orden
-    try {
-      await createOrder();
-      // Limpiar el carrito después de crear la orden
-      setCartItems({});
-      // Redirigir al usuario a la página de órdenes
-      navigate("/orders");
-    } catch (error) {
-      // Si hay un error, no hacer nada más
-      console.error("Error creating order:", error);
-    }
+  // Redirigir a la página de órdenes
+  const handleProceed = () => {
+    navigate("/orders");
   };
 
   return (
@@ -90,20 +78,9 @@ const Cart = () => {
               <b>${total}</b>
             </div>
             {/* Proceed Button */}
-            <button onClick={handleProceed} disabled={loading}>
-              {loading ? "Processing..." : "Proceed to Payment"}
+            <button onClick={handleProceed}>
+              Proceed to Payment
             </button>
-          </div>
-        </div>
-
-        {/* Promo Code Section */}
-        <div className="cart-promo-code">
-          <div>
-            <p>If you have a promo code, enter it here:</p>
-            <div className="cart-promo-code-input">
-              <input type="text" name="promo-code" id="promo-code" placeholder="Promo Code XYZ" />
-              <button>Submit</button>
-            </div>
           </div>
         </div>
       </div>

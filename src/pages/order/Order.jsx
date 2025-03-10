@@ -1,46 +1,46 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { StoreContext } from "../../contexts/StoreContext";
-import AuthenticationContext from "../../contexts/AuthenticationContext"; // Importar el contexto de autenticación
+import AuthenticationContext from "../../contexts/AuthenticationContext";
+import useCreateOrder from "../../hooks/UseCreateOrder";
+import "react-toastify/dist/ReactToastify.css";
 import "./Order.css";
 
 const Order = () => {
-  const { getTotalCartAmount } = useContext(StoreContext);
-  const { user } = useContext(AuthenticationContext); // Obtener los datos del usuario
-  const [address, setAddress] = useState(user ? user.address : ""); // Crear un estado para la dirección
+  const { getTotalCartAmount, setCartItems } = useContext(StoreContext);
+  const { user } = useContext(AuthenticationContext);
+  const { createOrder, loading } = useCreateOrder();
+  const [address, setAddress] = useState(user ? user.address : "");
   const handleAddressChange = (e) => {
-    setAddress(e.target.value); // Actualizar la dirección cuando el usuario la edite
+    setAddress(e.target.value);
+  };
+  const handleProceed = async () => {
+    try {
+      await createOrder();
+      setCartItems({});
+      toast.success("Order placed successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast.error("Failed to place order. Try again!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
   return (
     <form className="order">
       <div className="order-left">
         <p className="title">Delivery Information</p>
         <div className="multi-fields">
-          <input
-            type="text"
-            placeholder="Firstname"
-            value={user ? user.firstname : ""}
-            readOnly
-          />
-          <input
-            type="text"
-            placeholder="Lastname"
-            value={user ? user.lastname : ""}
-            readOnly
-          />
+          <input type="text" placeholder="Firstname" value={user?.firstname || ""} readOnly />
+          <input type="text" placeholder="Lastname" value={user?.lastname || ""} readOnly />
         </div>
-        <input
-          type="email"
-          placeholder="Email"
-          value={user ? user.email : ""}
-          readOnly
-        />
-        <input
-          type="text"
-          placeholder="Address"
-          value={address} // Mostrar el valor actualizado de address
-          onChange={handleAddressChange} // Permitir edición en Address
-        />
-        <input type="tel" placeholder="Phone" />
+        <input type="email" placeholder="Email" value={user?.email || ""} readOnly />
+        <input type="text" placeholder="Address" value={address} onChange={handleAddressChange} />
       </div>
       <div className="order-right">
         <div className="cart-total">
@@ -60,7 +60,9 @@ const Order = () => {
               <b>Total</b>
               <b>${getTotalCartAmount() + (getTotalCartAmount() === 0 ? 0 : 2)}</b>
             </div>
-            <button>Proceed to Payment</button>
+            <button onClick={handleProceed} disabled={loading}>
+              {loading ? "Processing..." : "Proceed to Payment"}
+            </button>
           </div>
         </div>
       </div>
